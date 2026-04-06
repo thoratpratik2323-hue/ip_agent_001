@@ -6,23 +6,17 @@ import io
 from contextlib import redirect_stdout
 from fastapi.middleware.cors import CORSMiddleware
 
-# --- DYNAMIC PATH INJECTION ---
-# Ensure the root project directory is in the sys.path
-repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-if repo_root not in sys.path:
-    sys.path.insert(0, repo_root)
-
-# Now we can import directly from src
+# --- DYNAMIC MEMORY LINK ---
+# We are now in the PROJECT ROOT, so 'src' is directly accessible!
 try:
     from src.main import main as run_engine
-    from src.port_manifest import build_port_manifest
     from src.query_engine import QueryEnginePort
     ENGINE_AVAILABLE = True
 except ImportError as e:
-    print(f"[CRITICAL] Failed to import engine: {e}")
+    print(f"[CRITICAL] Backend Discovery Failed: {e}")
     ENGINE_AVAILABLE = False
 
-app = FastAPI(title="IP Codemaker Agent | Backend API")
+app = FastAPI(title="IP Codemaker Agent | Root Core")
 
 app.add_middleware(
     CORSMiddleware,
@@ -38,43 +32,40 @@ class CommandRequest(BaseModel):
 async def get_status():
     return {
         "status": "online",
-        "model": "ip_agent_001 (Direct Core)",
-        "engine_link": "stabilized" if ENGINE_AVAILABLE else "broken",
-        "health": "Optimal"
+        "model": "ip_agent_001 (Root Synced)",
+        "engine": "active" if ENGINE_AVAILABLE else "error",
+        "health": "Synchronized"
     }
 
 @app.post("/api/execute")
 async def execute_command(req: CommandRequest):
-    """Direct Memory Router: Bypasses subprocess for maximum stability."""
+    """Direct Memory Execution for ip_agent_001."""
     if not ENGINE_AVAILABLE:
-        return {"output": "### [ENGINE_OFFLINE]\nBackend logic failed to load. Check installation.", "error": True}
+        return {"output": "### [CORE_UNAVAILABLE]\nNeural engine failed to load. Check root directory.", "error": True}
 
     cmd = req.command.lower()
     is_coding_task = any(k in cmd for k in ["code", "rust", "function", "write", "script", "create", "fix", "error", "build", "debug"])
     source_label = "### [CLAW_CORE_ACTIVE]" if is_coding_task else "### [LLAMA_COGNITION]"
 
     try:
-        # Capture stdout from the engine's print statements
         f = io.StringIO()
         with redirect_stdout(f):
-            # Run the oneshot command logic directly in-memory
-            # This is significantly faster and more reliable than subprocess
+            # Direct in-memory call for speed and reliability
             run_engine(["oneshot", req.command])
         
         output = f.getvalue()
         return {"output": f"{source_label}\n\n{output}", "error": False}
-            
     except Exception as e:
-        return {"output": f"### [RUNTIME_ERROR]\n{str(e)}\n\nTraceback in server console.", "error": True}
+        return {"output": f"### [RUNTIME_ERROR]\n{str(e)}", "error": True}
 
 @app.get("/api/files")
 async def list_files():
     try:
         files = []
-        for root, dirs, filenames in os.walk(repo_root):
-            if any(x in root for x in [".git", "node_modules", ".claw"]): continue
+        for root, dirs, filenames in os.walk("."):
+            if any(x in root for x in [".git", "node_modules", ".claw", "gui"]): continue
             for f in filenames:
-                files.append(os.path.relpath(os.path.join(root, f), repo_root))
+                files.append(os.path.relpath(os.path.join(root, f), "."))
         return {"files": files[:50]}
     except:
         return {"files": []}

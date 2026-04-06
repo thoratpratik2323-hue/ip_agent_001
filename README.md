@@ -44,14 +44,23 @@ The Agent features a **"Neural Vortex" Dashboard**—a 3D tactical interface des
 
 ---
 
-## ⚡ Quick Start (Tactical Protocol)
+---
 
+## ⚡ Mission Control (Launch Protocols)
+
+### 🖥️ Neural Desktop Interface
+Launch the high-fidelity standalone desktop experience:
 ```bash
-# Initialize the Neural Link
+cd gui
+npm install
+npm run desktop
+```
+
+### 🧬 Link Initialization
+Initialize the backend neural link:
+```bash
 cd rust
 cargo build --workspace
-
-# Execute the Agent
 ./target/debug/claw --help
 ```
 

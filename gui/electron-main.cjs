@@ -5,25 +5,25 @@ const path = require('path');
 function createWindow() {
   // Create the browser window.
   const win = new BrowserWindow({
-    width: 1280,
-    height: 800,
-    title: "IP Codemaker Agent | Desktop Console",
-    backgroundColor: '#0b0e14',
+    width: 1400,
+    height: 900,
+    title: "IP Codemaker Agent | Neural Desktop",
+    backgroundColor: '#07070f',
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
-      enableRemoteModule: false,
     },
     autoHideMenuBar: true,
+    titleBarStyle: 'hiddenInset',
   });
 
-  // Load the web app URL. 
-  // We use the Vite port (3000) for development.
   const isDev = !app.isPackaged;
   const startUrl = isDev 
     ? 'http://localhost:3006' 
-    : `file://${path.join(__dirname, '../build/index.html')}`;
+    : `file://${path.join(__dirname, 'dist/index.html')}`;
 
+  console.log(`Environment: ${isDev ? 'Development' : 'Packaged'}`);
+  console.log(`Loading URL: ${startUrl}`);
   win.loadURL(startUrl);
 
   // If in dev mode, open the dev tools automatically

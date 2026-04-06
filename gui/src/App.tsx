@@ -1,89 +1,111 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { 
   Terminal, 
   Shield, 
   Cpu, 
   Command, 
   ChevronRight, 
-  Globe
-} from 'lucide-react';
-import logo from './assets/logo.png'; // CANONICAL IMPORT FOR MISSION RELIABILITY
+  Globe,
+  Zap,
+  Activity,
+  Box,
+  Database,
+  Code2,
+  Clock,
+  Layers,
+  Settings,
+  LayoutDashboard,
+  Maximize2,
+  History,
+  MoreVertical,
+  Plus,
+  ArrowRight,
+  Edit2,
+  Trash2,
+  Send,
+  Menu,
+  PanelLeftClose,
+  Search
+} from "lucide-react";
+import ReactMarkdown from "react-markdown";
+import { cn } from "./lib/utils";
+
+// --- THEME DEFINITION ---
+const THEME = {
+  primary: "#00d2ff",
+  secondary: "#9333ea",
+  pc: "0, 210, 255",
+  label: "Neural · Default",
+  name: "Agent Blue",
+  mode: "Vortex Protocol",
+  avt: "AB"
+};
 
 interface Message {
   id: string;
-  role: 'user' | 'agent';
+  role: "user" | "assistant";
   content: string;
   timestamp: Date;
 }
 
-const App: React.FC = () => {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: '1',
-      role: 'agent',
-      content: "IP CODEMAKER AGENT ONLINE. Neural Link Synchronized. Emerald Protocol Engaged.",
-      timestamp: new Date(),
-    }
-  ]);
-  const [input, setInput] = useState('');
-  const [isTyping, setIsTyping] = useState(false);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+interface Project {
+  id: string;
+  name: string;
+  lastModified: Date;
+}
+
+// --- COMPONENTS ---
+
+const VortexCanvas = ({ themeColor }: { themeColor: string }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  // --- NEURAL VORTEX ENGINE (EMERALD MINT) ---
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    let particles: { x: number; y: number; vx: number; vy: number; size: number }[] = [];
-    const particleCount = 50;
-
+    let particles: any[] = [];
     const resize = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+      canvas.width = canvas.parentElement?.offsetWidth || 0;
+      canvas.height = canvas.parentElement?.offsetHeight || 0;
     };
 
-    const createParticles = () => {
+    const init = () => {
       particles = [];
-      for (let i = 0; i < particleCount; i++) {
+      for (let i = 0; i < 60; i++) {
         particles.push({
           x: Math.random() * canvas.width,
           y: Math.random() * canvas.height,
-          vx: (Math.random() - 0.5) * 0.3,
-          vy: (Math.random() - 0.5) * 0.3,
-          size: Math.random() * 2 + 0.5,
+          r: Math.random() * 1.5 + 0.3,
+          vx: (Math.random() - 0.5) * 0.4,
+          vy: (Math.random() - 0.5) * 0.4,
+          alpha: Math.random() * 0.4 + 0.1
         });
       }
     };
 
     const draw = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      const accentColor = '45, 212, 191'; 
-      
       particles.forEach((p, i) => {
-        p.x += p.vx;
-        p.y += p.vy;
-
-        if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
-        if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
-
+        p.x += p.vx; p.y += p.vy;
+        if (p.x < 0) p.x = canvas.width; if (p.x > canvas.width) p.x = 0;
+        if (p.y < 0) p.y = canvas.height; if (p.y > canvas.height) p.y = 0;
+        
         ctx.beginPath();
-        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(${accentColor}, 0.5)`;
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${themeColor}, ${p.alpha})`;
         ctx.fill();
 
         for (let j = i + 1; j < particles.length; j++) {
-          const p2 = particles[j];
-          const dist = Math.hypot(p.x - p2.x, p.y - p2.y);
-          if (dist < 100) {
+          const q = particles[j];
+          const dist = Math.hypot(p.x - q.x, p.y - q.y);
+          if (dist < 120) {
             ctx.beginPath();
             ctx.moveTo(p.x, p.y);
-            ctx.lineTo(p2.x, p2.y);
-            ctx.strokeStyle = `rgba(${accentColor}, ${0.12 * (1 - dist / 100)})`;
+            ctx.lineTo(q.x, q.y);
+            ctx.strokeStyle = `rgba(${themeColor}, ${0.1 * (1 - dist / 120)})`;
             ctx.stroke();
           }
         }
@@ -91,179 +113,300 @@ const App: React.FC = () => {
       requestAnimationFrame(draw);
     };
 
-    window.addEventListener('resize', resize);
-    resize();
-    createParticles();
-    draw();
+    window.addEventListener("resize", resize);
+    resize(); init(); draw();
+    return () => window.removeEventListener("resize", resize);
+  }, [themeColor]);
 
-    return () => window.removeEventListener('resize', resize);
+  return <canvas ref={canvasRef} className="absolute inset-0 pointer-events-none opacity-40 mix-blend-screen" />;
+};
+
+const StatCard = ({ label, value, sub, spark, accent }: { label: string; value: string; sub: string; spark?: boolean; accent: string }) => (
+  <div className="stat-card group">
+    <div className="text-[9px] font-black tracking-widest opacity-30 mb-1.5 uppercase">{label}</div>
+    <div className="text-2xl font-black text-white glow-text-blue" style={{ textShadow: `0 0 15px ${accent}66` }}>{value}</div>
+    <div className="text-[10px] opacity-30 mt-1 font-mono">{sub}</div>
+    {spark && (
+      <div className="flex items-end gap-0.5 h-6 mt-4">
+        {[...Array(15)].map((_, i) => (
+          <div 
+            key={i} 
+            className="flex-1 rounded-t-[1px] transition-all duration-500" 
+            style={{ 
+              height: `${20 + Math.random() * 80}%`, 
+              backgroundColor: `${accent}${Math.floor(i * 15 + 20).toString(16)}` 
+            }} 
+          />
+        ))}
+      </div>
+    )}
+  </div>
+);
+
+const Gauge = ({ name, value, accent }: { name: string; value: number; accent: string }) => (
+  <div className="mb-5">
+    <div className="flex justify-between items-center mb-1.5">
+      <div className="text-[10px] font-bold opacity-30 uppercase tracking-tighter">{name}</div>
+      <div className="text-[9px] font-mono opacity-40" style={{ color: accent }}>{value.toFixed(0)}%</div>
+    </div>
+    <div className="h-[2px] bg-white/5 rounded-full overflow-hidden">
+      <motion.div 
+        initial={{ width: 0 }}
+        animate={{ width: `${value}%` }}
+        transition={{ duration: 1 }}
+        className="h-full rounded-full"
+        style={{ backgroundColor: accent }}
+      />
+    </div>
+  </div>
+);
+
+export default function App() {
+  const theme = THEME;
+  const themeKey = "blue";
+  
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [input, setInput] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [projects, setProjects] = useState<Project[]>([
+    { id: "1", name: "PROJECT_VORTEX_ALPHA", lastModified: new Date() },
+    { id: "2", name: "NEURAL_CORE_V2", lastModified: new Date(Date.now() - 86400000) },
+  ]);
+
+  const [gauges, setGauges] = useState({ cpu: 42, mem: 68, net: 22, engine: 94 });
+  const chatEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setGauges({
+        cpu: Math.min(100, Math.max(0, 35 + Math.random() * 20)),
+        mem: Math.min(100, Math.max(0, 65 + Math.random() * 5)),
+        net: Math.min(100, Math.max(0, 15 + Math.random() * 30)),
+        engine: Math.min(100, Math.max(0, 92 + Math.random() * 8))
+      });
+    }, 3000);
+    return () => clearInterval(timer);
   }, []);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  useEffect(scrollToBottom, [messages]);
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
   const handleSend = async () => {
-    if (!input.trim()) return;
+    if (!input.trim() || isLoading) return;
 
-    const userMsg: Message = {
+    const userMessage: Message = {
       id: Date.now().toString(),
-      role: 'user',
+      role: "user",
       content: input,
       timestamp: new Date(),
     };
 
-    setMessages(prev => [...prev, userMsg]);
-    setInput('');
-    setIsTyping(true);
+    setMessages((prev) => [...prev, userMessage]);
+    setInput("");
+    setIsLoading(true);
 
     try {
-      const response = await fetch('http://localhost:5000/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt: input }),
+      const resp = await fetch("http://localhost:5000/api/execute", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ command: input }),
       });
-      const data = await response.json();
       
-      const agentMsg: Message = {
+      const data = await resp.json();
+
+      const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
-        role: 'agent',
-        content: data.response,
-        timestamp: new Date()
+        role: "assistant",
+        content: data.error ? `### ENGINE_FAILURE\n\n${data.output}` : data.output,
+        timestamp: new Date(),
       };
-      setMessages(prev => [...prev, agentMsg]);
+      setMessages((prev) => [...prev, assistantMessage]);
     } catch (error) {
-      console.error("Link Failure:", error);
+      const errorMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        role: "assistant",
+        content: `### CONNECTION_FAILURE\n\nUnauthorized or broken link to Claw Backend (Port 5000). Ensure \`server.py\` is active.`,
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, errorMessage]);
     } finally {
-      setIsTyping(false);
+      setIsLoading(false);
     }
   };
 
   return (
-    <div className="relative min-h-screen bg-[#050505] text-teal-400 font-mono overflow-hidden select-none">
-      <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{
-        backgroundImage: 'linear-gradient(rgba(45, 212, 191, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(45, 212, 191, 0.1) 1px, transparent 1px)',
-        backgroundSize: '40px 40px'
-      }} />
+    <div className="flex h-screen w-full overflow-hidden relative bg-[#07070f] text-[#c8c8e0] font-mono selection:bg-white/10 antialiased">
+      <VortexCanvas themeColor={theme.pc} />
+      <div className="neural-mesh pointer-events-none" />
 
-      <canvas ref={canvasRef} className="absolute inset-0 pointer-events-none opacity-40" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(5,5,5,0.9)_100%)] pointer-events-none" />
-      
-      <nav className="fixed top-0 left-0 right-0 z-40 border-b border-teal-900/30 bg-[#050505]/90 backdrop-blur-3xl px-8 py-5 flex items-center justify-between">
-        <div className="flex items-center gap-5">
-          <div className="w-11 h-11 bg-teal-400/10 rounded-xl border border-teal-400/20 flex items-center justify-center p-1 shadow-[0_0_20px_rgba(45,212,191,0.2)] overflow-hidden">
-             <img src={logo} className="w-full h-full object-cover rounded-lg" alt="Vortex_Shard" />
+      {/* --- MAIN AREA --- */}
+      <main className="flex-1 flex flex-col relative min-w-0 h-full">
+        <header className="h-16 flex items-center justify-between px-6 bg-[#0c0c1a]/80 backdrop-blur-3xl border-b border-white/10 z-50">
+          <div className="flex items-center gap-6">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center font-black italic text-lg border border-white/20 bg-black shadow-lg" style={{ color: theme.primary }}>IP</div>
+            <div className="hidden sm:block">
+                <h1 className="text-sm font-black tracking-tighter text-white uppercase italic leading-none">IP Codemaker</h1>
+                <p className="text-[8px] font-mono mt-0.5 opacity-40 uppercase tracking-widest" style={{ color: theme.primary }}>ip_agent_001</p>
+              </div>
+            </div>
+            
+            <div className="h-6 w-[1px] bg-white/10 mx-2" />
           </div>
-          <div className="flex flex-col">
-            <span className="text-2xl font-black tracking-tight flex items-center gap-3">
-              IP Codemaker Agent
-              <span className="text-[9px] opacity-30 font-bold border border-teal-400/30 px-2 py-0.5 rounded tracking-[0.3em] uppercase">IP_Agent_001</span>
-            </span>
-          </div>
-        </div>
 
-        <div className="hidden lg:flex items-center gap-8 text-[11px] font-black tracking-[0.2em] opacity-40 uppercase">
-           <div className="flex items-center gap-2"><Globe size={14} className="text-teal-500" /> IP Verse</div>
-           <div className="flex items-center gap-2 px-4 py-1.5 border border-teal-400/20 rounded-lg bg-teal-400/5"><Shield size={14} /> Link Secure</div>
-        </div>
-      </nav>
-
-      <main className="pt-32 pb-40 px-6 md:px-12 max-w-5xl mx-auto flex flex-col items-center">
-        <div className="w-full space-y-10">
-          <AnimatePresence initial={false}>
-            {messages.map((msg) => (
-              <motion.div
-                key={msg.id}
-                initial={{ opacity: 0, x: msg.role === 'user' ? 20 : -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
-              >
-                <div className={`max-w-[90%] md:max-w-[80%]`}>
-                  <div className={`p-6 rounded-2xl border transition-all duration-500 shadow-2xl
-                    ${msg.role === 'user' 
-                      ? 'bg-teal-400/5 border-teal-400/20 text-teal-50' 
-                      : 'bg-zinc-950/80 border-teal-900/40 text-teal-400 backdrop-blur-3xl'}
-                  `}>
-                    <div className="flex items-center gap-2 mb-3 opacity-20 text-[10px] font-black uppercase tracking-[0.2em]">
-                      {msg.role === 'agent' ? <ChevronRight size={14} className="animate-pulse" /> : <Terminal size={14} />}
-                      {msg.role === 'user' ? 'Local_Terminal' : 'Agent_Response'}
-                      <span className="ml-auto">{msg.timestamp.toLocaleTimeString()}</span>
-                    </div>
-                    
-                    <div className="text-sm md:text-[15px] leading-relaxed whitespace-pre-wrap break-words font-medium tracking-wide">
-                      {msg.content}
-                    </div>
-                  </div>
+          <div className="flex items-center gap-8">
+            <div className="hidden md:flex items-center gap-6">
+              <div className="flex flex-col gap-1">
+                <span className="text-[7px] font-bold text-gray-500 uppercase tracking-widest">Neural Load</span>
+                <div className="w-24 h-1.5 bg-white/5 rounded-full overflow-hidden">
+                  <div className="h-full transition-all duration-1000" style={{ width: `${gauges.engine}%`, backgroundColor: theme.primary }} />
                 </div>
-              </motion.div>
-            ))}
-          </AnimatePresence>
+              </div>
+              <div className="flex flex-col gap-1">
+                <span className="text-[7px] font-bold text-gray-500 uppercase tracking-widest">Memory</span>
+                <div className="w-24 h-1.5 bg-white/5 rounded-full overflow-hidden">
+                  <div className="h-full transition-all duration-1000" style={{ width: `${gauges.mem}%`, backgroundColor: theme.primary }} />
+                </div>
+              </div>
+            </div>
+            
+            <div className="flex items-center gap-4 border-l border-white/10 pl-6 text-gray-500">
+              <Shield className="w-4 h-4" />
+              <Activity className="w-4 h-4" />
+              <Settings className="w-4 h-4 cursor-pointer hover:text-white transition-colors" />
+            </div>
+          </div>
+        </header>
 
-          {isTyping && (
-            <motion.div 
-              initial={{ opacity: 0 }} 
-              animate={{ opacity: 1 }} 
-              className="flex items-center gap-4 text-[11px] font-black px-10 opacity-40 tracking-[0.4em] uppercase italic"
-            >
-              <div className="flex gap-2">
-                {[0, 1, 2].map(i => (
-                  <motion.div key={i} animate={{ y: [-3, 3, -3] }} transition={{ repeat: Infinity, duration: 1.5, delay: i * 0.2 }} className="w-1.5 h-1.5 bg-teal-400 rounded-full" />
+        <div className="flex-1 overflow-y-auto p-8 custom-scrollbar relative">
+          {messages.length === 0 ? (
+            <div className="h-full max-w-5xl mx-auto flex flex-col justify-center">
+              <div className="grid grid-cols-3 gap-6 mb-12">
+                <StatCard label="Token Pool" value="1.4M" sub="Available Context" accent={theme.primary} spark />
+                <StatCard label="Neural Latency" value="12ms" sub="Real-time link" accent={theme.primary} />
+                <StatCard label="Model Core" value="405B" sub="Llama v3.1 Vortex" accent={theme.primary} spark />
+              </div>
+
+              <div className="text-center mb-12">
+                <motion.h2 
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  className="text-5xl font-black italic uppercase tracking-tighter text-white glow-text-blue"
+                  style={{ textShadow: `0 0 30px ${theme.primary}33` }}
+                >
+                  Neural Interface <span style={{ color: theme.primary }}>Online</span>
+                </motion.h2>
+                <div className="mt-8 flex justify-center gap-6 text-[10px] font-black uppercase tracking-[0.4em] opacity-20">
+                  <span>AES-256 Encryption</span>
+                  <span>|</span>
+                  <span>Autonomous Logic</span>
+                  <span>|</span>
+                  <span>Secure Sandbox</span>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                {[
+                  { icon: Code2, label: "Core Gen", desc: "Logic Synthesis" },
+                  { icon: Zap, label: "Burst Mode", desc: "Turbo Inference" },
+                  { icon: Terminal, label: "Debug Link", desc: "System Probe" },
+                  { icon: Globe, label: "Net Search", desc: "Knowledge Sync" },
+                ].map((item, i) => (
+                  <button key={i} className="p-6 stat-card hover:translate-y-[-4px] group">
+                    <item.icon className="w-7 h-7 mb-4 transition-all group-hover:scale-110" style={{ color: theme.primary }} />
+                    <p className="text-[12px] font-black text-white italic uppercase tracking-widest">{item.label}</p>
+                    <p className="text-[9px] opacity-30 mt-1 uppercase leading-tight">{item.desc}</p>
+                  </button>
                 ))}
               </div>
-              Streaming_Link...
-            </motion.div>
+            </div>
+          ) : (
+            <div className="max-w-4xl mx-auto space-y-14">
+              {messages.map((m) => (
+                <motion.div 
+                  key={m.id}
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  className={cn("flex flex-col gap-5", m.role === "user" ? "items-end" : "items-start")}
+                >
+                  <div className="flex items-center gap-3 px-2">
+                    {m.role === "assistant" && <div className="w-2.5 h-2.5 rounded-full animate-pulse" style={{ backgroundColor: theme.primary }} />}
+                    <span className="text-[9px] font-black uppercase tracking-[0.2em] opacity-40">
+                      {m.role === "user" ? "Protocol Operator" : `ip_agent_001 · VORTEX PROTOCOL`}
+                    </span>
+                  </div>
+                  <div className={cn(
+                    "glass-panel relative group",
+                    m.role === "user" 
+                      ? "bg-white/10 rounded-tr-none border-white/20 p-4 max-w-[70%]" 
+                      : "bg-black/60 rounded-tl-none border-white/5 shadow-inner p-6 max-w-[80%]"
+                  )}>
+                   <div className="prose prose-invert max-w-none prose-pre:bg-black/80 prose-pre:border prose-pre:border-white/5 prose-code:text-cyan-400 text-sm leading-relaxed">
+                    <ReactMarkdown>{m.content}</ReactMarkdown>
+                  </div>
+                  </div>
+                </motion.div>
+              ))}
+              {isLoading && (
+                <div className="flex flex-col items-start gap-4">
+                  <span className="text-[9px] font-black uppercase tracking-[0.2em] opacity-30 animate-pulse">Synthesizing Neural Buffer...</span>
+                  <div className="p-8 glass-panel bg-black/60 rounded-tl-none flex items-center gap-8 shadow-inner">
+                    <div className="flex gap-2.5">
+                      <div className="w-3 h-3 rounded-full animate-bounce" style={{ backgroundColor: theme.primary, animationDelay: "0ms" }} />
+                      <div className="w-3 h-3 rounded-full animate-bounce" style={{ backgroundColor: theme.primary, animationDelay: "150ms" }} />
+                      <div className="w-3 h-3 rounded-full animate-bounce" style={{ backgroundColor: theme.primary, animationDelay: "300ms" }} />
+                    </div>
+                    <span className="text-[11px] font-mono opacity-20 lowercase italic tracking-tighter">link operational · analyzing schematic...</span>
+                  </div>
+                </div>
+              )}
+              <div ref={chatEndRef} />
+            </div>
           )}
-          <div ref={messagesEndRef} />
+        </div>
+
+        {/* --- COMMAND INPUT --- */}
+        {/* --- COMMAND INPUT --- */}
+        <div className="p-8 pt-0 z-40 bg-gradient-to-t from-[#07070f] via-[#07070f]/80 to-transparent">
+          <div className="max-w-4xl mx-auto relative group">
+            <div className="absolute -inset-1 blur-2xl opacity-10 group-focus-within:opacity-30 transition-all duration-700 pointer-events-none" style={{ backgroundColor: theme.primary }} />
+            <div className="relative glass-panel bg-[#0c0c1a]/95 p-2 flex items-center gap-2 rounded-2xl border-white/5 group-hover:border-white/10 transition-all shadow-xl">
+              <div className="p-3 rounded-xl bg-black shadow-inner flex items-center justify-center">
+                <Terminal className="w-5 h-5" style={{ color: theme.primary }} />
+              </div>
+              <input 
+                type="text"
+                value={input}
+                onChange={e => setInput(e.target.value)}
+                onKeyDown={e => e.key === "Enter" && handleSend()}
+                placeholder="Enter Neural Mandate Sequence..."
+                className="flex-1 bg-transparent border-none focus:ring-0 text-white font-mono placeholder:text-gray-800 py-2.5 text-base tracking-tight"
+              />
+              <button 
+                onClick={handleSend}
+                disabled={!input.trim() || isLoading}
+                className="p-3 rounded-xl transition-all active:scale-95 disabled:opacity-20 shadow-xl hover:scale-105 flex items-center justify-center"
+                style={{ backgroundColor: theme.primary, color: "black" }}
+              >
+                <ArrowRight className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
         </div>
       </main>
 
-      <footer className="fixed bottom-0 left-0 right-0 p-10 z-40 bg-gradient-to-t from-[#050505] via-[#050505]/95 to-transparent">
-        <div className="max-w-4xl mx-auto relative group">
-          <div className="absolute -inset-1 rounded-2xl bg-teal-400/5 blur-xl group-focus-within:bg-teal-400/10 transition-all opacity-0 group-focus-within:opacity-100" />
-          
-          <div className="relative flex bg-zinc-950/80 rounded-xl border border-teal-400/10 backdrop-blur-3xl p-2 transition-all duration-300 group-focus-within:border-teal-400/40 group-focus-within:shadow-[0_0_30px_rgba(45,212,191,0.1)]">
-            <div className="flex items-center justify-center w-14 opacity-20">
-               <Command size={24} />
-            </div>
-            
-            <input
-              type="text"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && handleSend()}
-              placeholder="ENTER MISSION COMMAND..."
-              className="flex-1 bg-transparent px-5 py-4 text-sm focus:outline-none placeholder:opacity-20 text-teal-100"
-            />
-            
-            <div className="flex items-center px-2">
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={handleSend}
-                className="bg-teal-400 text-black px-8 py-3 rounded-lg font-black text-xs tracking-[0.2em] uppercase hover:bg-teal-300 transition-all shadow-[0_0_20px_rgba(45,212,191,0.2)]"
-              >
-                ENGAGE
-              </motion.button>
-            </div>
-          </div>
-        </div>
-      </footer>
-
       <style>{`
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { 
-          background: rgba(45, 212, 191, 0.1); 
-          border-radius: 20px;
-        }
-        ::-webkit-scrollbar-thumb:hover { 
-          background: rgba(45, 212, 191, 0.3); 
-        }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.03); border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.08); }
       `}</style>
     </div>
   );
-};
-
-export default App;
+}
