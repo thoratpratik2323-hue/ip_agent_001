@@ -4,23 +4,10 @@ import {
   Terminal, 
   Shield, 
   Cpu, 
-  Activity, 
-  Zap, 
-  Layers, 
   Command, 
   ChevronRight, 
-  Maximize2, 
-  Minimize2, 
   Hash, 
-  Settings,
-  Database,
-  Eye,
-  Globe,
-  Share2,
-  Trash2,
-  Copy,
-  PlusCircle,
-  Palette
+  Globe
 } from 'lucide-react';
 
 interface Message {
@@ -28,7 +15,6 @@ interface Message {
   role: 'user' | 'agent';
   content: string;
   timestamp: Date;
-  theme?: 'red' | 'purple';
 }
 
 const App: React.FC = () => {
@@ -36,18 +22,16 @@ const App: React.FC = () => {
     {
       id: '1',
       role: 'agent',
-      content: "IP CODEMAKER AGENT (ip_agent_001) ONLINE. Neural Link Secure. Awaiting Mission Directives.",
+      content: "IP CODEMAKER AGENT ONLINE. Neural Link Secure. System Optimized for Light Blue Protocol.",
       timestamp: new Date(),
     }
   ]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
-  const [theme, setTheme] = useState<'red' | 'purple'>('red');
-  const [isExpanded, setIsExpanded] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  // --- NEURAL VORTEX ENGINE (V2) ---
+  // --- NEURAL VORTEX ENGINE (LIGHT BLUE) ---
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -56,7 +40,7 @@ const App: React.FC = () => {
     if (!ctx) return;
 
     let particles: { x: number; y: number; vx: number; vy: number; size: number }[] = [];
-    const particleCount = 60;
+    const particleCount = 40;
 
     const resize = () => {
       canvas.width = window.innerWidth;
@@ -69,16 +53,16 @@ const App: React.FC = () => {
         particles.push({
           x: Math.random() * canvas.width,
           y: Math.random() * canvas.height,
-          vx: (Math.random() - 0.5) * 0.5,
-          vy: (Math.random() - 0.5) * 0.5,
-          size: Math.random() * 2 + 1,
+          vx: (Math.random() - 0.5) * 0.4,
+          vy: (Math.random() - 0.5) * 0.4,
+          size: Math.random() * 1.5 + 0.5,
         });
       }
     };
 
     const draw = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      const accentColor = theme === 'red' ? '255, 69, 0' : '138, 43, 226';
+      const accentColor = '56, 189, 248'; // Sky-400 (Light Blue)
       
       particles.forEach((p, i) => {
         p.x += p.vx;
@@ -95,11 +79,11 @@ const App: React.FC = () => {
         for (let j = i + 1; j < particles.length; j++) {
           const p2 = particles[j];
           const dist = Math.hypot(p.x - p2.x, p.y - p2.y);
-          if (dist < 150) {
+          if (dist < 120) {
             ctx.beginPath();
             ctx.moveTo(p.x, p.y);
             ctx.lineTo(p2.x, p2.y);
-            ctx.strokeStyle = `rgba(${accentColor}, ${0.15 * (1 - dist / 150)})`;
+            ctx.strokeStyle = `rgba(${accentColor}, ${0.1 * (1 - dist / 120)})`;
             ctx.stroke();
           }
         }
@@ -113,7 +97,7 @@ const App: React.FC = () => {
     draw();
 
     return () => window.removeEventListener('resize', resize);
-  }, [theme]);
+  }, []);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -147,8 +131,7 @@ const App: React.FC = () => {
         id: (Date.now() + 1).toString(),
         role: 'agent',
         content: data.response,
-        timestamp: new Date(),
-        theme: theme
+        timestamp: new Date()
       };
       setMessages(prev => [...prev, agentMsg]);
     } catch (error) {
@@ -159,101 +142,63 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className={`relative min-h-screen ${theme === 'red' ? 'bg-black text-orange-500' : 'bg-black text-purple-400'} font-mono overflow-hidden select-none`}>
-      {/* --- BACKGROUND VORTEX --- */}
-      <canvas ref={canvasRef} className="absolute inset-0 pointer-events-none opacity-40" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.8)_100%)] pointer-events-none" />
+    <div className="relative min-h-screen bg-[#020617] text-sky-400 font-mono overflow-hidden select-none">
+      {/* --- BACKGROUND --- */}
+      <canvas ref={canvasRef} className="absolute inset-0 pointer-events-none opacity-30" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(2,6,23,0.9)_100%)] pointer-events-none" />
       
-      {/* --- SCANLINE OVERLAY --- */}
-      <div className="absolute inset-0 pointer-events-none z-50 opacity-[0.05]" style={{
+      {/* --- SCANLINE EFFECT --- */}
+      <div className="absolute inset-0 pointer-events-none z-50 opacity-[0.03]" style={{
         background: 'repeating-linear-gradient(0deg, #000, #000 1px, transparent 1px, transparent 2px)',
         backgroundSize: '100% 2px'
       }} />
 
-      {/* --- TOP TACTICAL HUD --- */}
-      <nav className={`fixed top-0 left-0 right-0 z-40 border-b ${theme === 'red' ? 'border-orange-900/40 bg-black/60' : 'border-purple-900/40 bg-black/60'} backdrop-blur-xl px-6 py-3 flex items-center justify-between`}>
+      {/* --- HUD --- */}
+      <nav className="fixed top-0 left-0 right-0 z-40 border-b border-sky-900/30 bg-[#020617]/80 backdrop-blur-xl px-6 py-4 flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <motion.div 
-            whileHover={{ scale: 1.1, rotate: 180 }}
-            onClick={() => setTheme(theme === 'red' ? 'purple' : 'red')}
-            className={`p-2 rounded-lg cursor-pointer ${theme === 'red' ? 'bg-orange-500/10 text-orange-500 shadow-[0_0_15px_rgba(255,69,0,0.3)]' : 'bg-purple-500/10 text-purple-400 shadow-[0_0_15px_rgba(138,43,226,0.3)]'}`}
-          >
-            <Palette size={20} />
-          </motion.div>
+          <img src="/vortex-logo.png" className="w-8 h-8 rounded-lg shadow-[0_0_15px_rgba(56,189,248,0.2)]" alt="" />
           <div className="flex flex-col">
-            <span className="text-xs uppercase tracking-[0.3em] opacity-60 font-bold">Project Designation</span>
-            <div className="flex items-center gap-2">
-              <span className="text-lg font-black tracking-tight flex items-center gap-2">
-                <img src="/vortex-logo.png" className="w-5 h-5 rounded-full" alt="" />
-                IP CODEMAKER <span className="opacity-40">001</span>
-              </span>
-              <div className={`w-2 h-2 rounded-full animate-pulse ${theme === 'red' ? 'bg-orange-500 shadow-[0_0_8px_#ff4500]' : 'bg-purple-500 shadow-[0_0_8px_#a855f7]'}`} />
-            </div>
+            <span className="text-xl font-bold tracking-tight">
+              IP Codemaker Agent
+              <span className="ml-3 text-[10px] opacity-40 font-black tracking-[0.2em] border border-sky-500/20 px-2 py-0.5 rounded">IP_Agent_001</span>
+            </span>
           </div>
         </div>
 
-        <div className="hidden md:flex items-center gap-8 text-[10px] uppercase font-bold tracking-widest opacity-60">
-          <div className="flex items-center gap-2"><Cpu size={12} /> Model: Llama-3.1-405B</div>
-          <div className="flex items-center gap-2"><Globe size={12} /> Region: IP Verse Node</div>
-          <div className="flex items-center gap-2"><Shield size={12} /> Signal: AES-256 Encrypted</div>
-        </div>
-
-        <div className="flex items-center gap-3">
-          <div className={`px-3 py-1 rounded border ${theme === 'red' ? 'border-orange-500/30 text-orange-500' : 'border-purple-500/30 text-purple-400'} text-[10px] font-bold`}>
-            {theme === 'red' ? 'AGENT RED' : 'AGENT PURPLE'} MODE
-          </div>
+        <div className="hidden md:flex items-center gap-6 text-[10px] uppercase font-bold tracking-widest opacity-40">
+          <div className="flex items-center gap-2 px-3 py-1 bg-sky-500/5 rounded-full border border-sky-500/10"><Shield size={12} /> SECURE SIGNAL</div>
+          <div className="flex items-center gap-2"><Cpu size={12} /> Llama 405B</div>
+          <div className="flex items-center gap-2"><Globe size={12} /> IP Verse</div>
         </div>
       </nav>
 
-      {/* --- SIDE DENSE METRICS --- */}
-      <div className="fixed left-6 top-32 z-40 hidden xl:flex flex-col gap-6 w-16">
-         {[Activity, Zap, Layers, Database].map((Icon, idx) => (
-           <motion.div 
-             key={idx}
-             whileHover={{ x: 5 }}
-             className={`p-4 rounded-xl border ${theme === 'red' ? 'border-orange-900/20 bg-black/40 text-orange-500/40 hover:text-orange-500' : 'border-purple-900/20 bg-black/40 text-purple-500/40 hover:text-purple-400'} backdrop-blur-md transition-colors cursor-help`}
-           >
-             <Icon size={20} />
-             <div className="h-4 w-1 mt-2 bg-current rounded-full opacity-20" />
-           </motion.div>
-         ))}
-      </div>
-
-      {/* --- MAIN VORTEX CHAT --- */}
-      <main className={`pt-24 pb-32 px-4 md:px-8 max-w-6xl mx-auto flex flex-col items-center transition-all duration-700 ${isExpanded ? 'max-w-full scale-100' : 'scale-[0.98]'}`} style={{ 
-        perspective: '1200px',
-        transform: 'translateZ(0px)'
-      }}>
-        <div className="w-full space-y-6" style={{ transform: 'rotateX(2deg)' }}>
+      {/* --- MAIN INTERFACE --- */}
+      <main className="pt-28 pb-32 px-4 md:px-8 max-w-5xl mx-auto flex flex-col items-center">
+        <div className="w-full space-y-8">
           <AnimatePresence initial={false}>
             {messages.map((msg) => (
               <motion.div
                 key={msg.id}
-                initial={{ opacity: 0, x: msg.role === 'user' ? 40 : -40, z: -100 }}
-                animate={{ opacity: 1, x: 0, z: 0 }}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
                 className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
               >
-                <div className={`relative max-w-[85%] md:max-w-[70%] group`}>
-                  {/* Glassmorphic Bubble */}
-                  <div className={`p-4 md:p-6 rounded-2xl md:rounded-3xl border backdrop-blur-3xl shadow-2xl transition-all duration-300
+                <div className={`max-w-[85%] md:max-w-[75%]`}>
+                  <div className={`p-5 rounded-2xl border backdrop-blur-2xl transition-all duration-300
                     ${msg.role === 'user' 
-                      ? (theme === 'red' ? 'bg-orange-500/10 border-orange-500/30 text-orange-100' : 'bg-purple-500/10 border-purple-500/30 text-purple-100') 
-                      : (theme === 'red' ? 'bg-black/60 border-orange-900/40' : 'bg-black/60 border-purple-900/40')}
+                      ? 'bg-sky-500/10 border-sky-400/20 text-sky-50' 
+                      : 'bg-slate-900/40 border-sky-900/40 text-sky-400'}
                   `}>
-                    <div className="flex items-center gap-2 mb-2 opacity-40 text-[10px] font-bold tracking-tighter">
-                      {msg.role === 'agent' ? <ChevronRight size={14} className="text-current animate-pulse" /> : <Terminal size={12} />}
-                      {msg.role === 'user' ? 'CONTROL_COMMAND' : `AGENT_RESPONSE // MISSION_${msg.id.slice(-4)}`}
+                    <div className="flex items-center gap-2 mb-2 opacity-30 text-[10px] font-black uppercase tracking-tighter">
+                      {msg.role === 'agent' ? <ChevronRight size={14} className="text-sky-500" /> : <Terminal size={12} />}
+                      {msg.role === 'user' ? 'Local_IO' : 'Agent_Response'}
                       <span className="ml-auto">{msg.timestamp.toLocaleTimeString()}</span>
                     </div>
                     
-                    <div className="text-sm md:text-base leading-relaxed tracking-wide whitespace-pre-wrap break-words font-light">
+                    <div className="text-sm md:text-base leading-relaxed whitespace-pre-wrap break-words font-medium">
                       {msg.content}
                     </div>
                   </div>
-
-                  {/* Aesthetic Shadow/Glow */}
-                  <div className={`absolute -inset-1 rounded-3xl blur-xl opacity-0 group-hover:opacity-20 transition-opacity pointer-events-none
-                    ${theme === 'red' ? 'bg-orange-500' : 'bg-purple-500'}`} />
                 </div>
               </motion.div>
             ))}
@@ -263,30 +208,26 @@ const App: React.FC = () => {
             <motion.div 
               initial={{ opacity: 0 }} 
               animate={{ opacity: 1 }} 
-              className={`flex items-center gap-2 text-xs font-black p-4 italic opacity-80 ${theme === 'red' ? 'text-orange-500' : 'text-purple-400'}`}
+              className="flex items-center gap-3 text-[10px] font-black px-6 opacity-50 tracking-widest italic"
             >
-              <div className="flex gap-1">
+              <div className="flex gap-1.5">
                 {[0, 1, 2].map(i => (
-                  <motion.div key={i} animate={{ y: [-2, 2, -2] }} transition={{ repeat: Infinity, delay: i * 0.1 }} className="w-1.5 h-1.5 bg-current rounded-full" />
+                  <motion.div key={i} animate={{ opacity: [0.2, 1, 0.2] }} transition={{ repeat: Infinity, delay: i * 0.2 }} className="w-1 h-1 bg-sky-400 rounded-full" />
                 ))}
               </div>
-              DECRYPTING NEURAL STREAM...
+              AGENT STREAMING...
             </motion.div>
           )}
           <div ref={messagesEndRef} />
         </div>
       </main>
 
-      {/* --- COMMAND DOCK (V2) --- */}
-      <footer className="fixed bottom-0 left-0 right-0 p-6 z-40 bg-gradient-to-t from-black via-black/90 to-transparent">
+      {/* --- COMMAND CONSOLE --- */}
+      <footer className="fixed bottom-0 left-0 right-0 p-8 z-40 bg-gradient-to-t from-[#020617] via-[#020617] to-transparent">
         <div className="max-w-4xl mx-auto relative group">
-          {/* Animated Glow Border */}
-          <div className={`absolute -inset-[2px] rounded-2xl blur-sm opacity-50 group-focus-within:opacity-100 transition-opacity
-            ${theme === 'red' ? 'bg-gradient-to-r from-orange-600 via-red-500 to-orange-600' : 'bg-gradient-to-r from-purple-600 via-indigo-500 to-purple-600'}`} />
-          
-          <div className="relative flex bg-black/80 rounded-2xl border border-white/10 backdrop-blur-2xl p-1 overflow-hidden">
-            <div className={`flex items-center justify-center w-14 border-r border-white/5 opacity-50 ${theme === 'red' ? 'text-orange-500' : 'text-purple-400'}`}>
-               <Command size={22} className="animate-pulse" />
+          <div className="relative flex bg-slate-900/60 rounded-xl border border-sky-500/10 backdrop-blur-3xl p-1.5 transition-all group-focus-within:border-sky-500/30">
+            <div className="flex items-center justify-center w-12 opacity-30">
+               <Command size={20} />
             </div>
             
             <input
@@ -294,41 +235,33 @@ const App: React.FC = () => {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyPress={(e) => e.key === 'Enter' && handleSend()}
-              placeholder={theme === 'red' ? "AGENT RED // INPUT COMMAND..." : "AGENT PURPLE // AWAITING DIRECTIVES..."}
-              className={`flex-1 bg-transparent px-6 py-4 text-sm focus:outline-none placeholder:opacity-30 ${theme === 'red' ? 'text-orange-100' : 'text-purple-100'}`}
+              placeholder="ENTER COMMAND FOR IP CODEMAKER..."
+              className="flex-1 bg-transparent px-4 py-3.5 text-sm focus:outline-none placeholder:opacity-20 text-sky-100"
             />
             
-            <div className="flex items-center gap-1 px-2">
+            <div className="flex items-center px-2">
               <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
                 onClick={handleSend}
-                className={`p-3 rounded-xl transition-all font-black text-xs tracking-widest flex items-center gap-2
-                  ${theme === 'red' 
-                    ? 'bg-orange-500 text-black hover:bg-orange-400 shadow-[0_0_20px_rgba(255,69,0,0.4)]' 
-                    : 'bg-purple-500 text-black hover:bg-purple-400 shadow-[0_0_20px_rgba(168,85,247,0.4)]'}`}
+                className="bg-sky-500 text-slate-950 px-6 py-2.5 rounded-lg font-black text-xs tracking-widest hover:bg-sky-400 transition-colors shadow-[0_0_15px_rgba(56,189,248,0.2)]"
               >
-                ENGAGE <ChevronRight size={16} strokeWidth={3} />
+                ENGAGE
               </motion.button>
             </div>
           </div>
         </div>
       </footer>
 
-      {/* --- HUD DECORATIONS --- */}
-      <div className={`fixed bottom-8 right-8 z-50 text-[10px] font-bold opacity-30 tracking-[0.5em] hidden lg:block ${theme === 'red' ? 'text-orange-500' : 'text-purple-400'}`}>
-        VORTEX_PROTOCOL_v.1.00.01 // SYSTEM_READY
-      </div>
-
       <style>{`
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); }
+        ::-webkit-scrollbar { width: 3px; }
+        ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { 
-          background: ${theme === 'red' ? 'rgba(255,69,0,0.2)' : 'rgba(168,85,247,0.2)'}; 
+          background: rgba(56, 189, 248, 0.1); 
           border-radius: 10px;
         }
         ::-webkit-scrollbar-thumb:hover { 
-          background: ${theme === 'red' ? 'rgba(255,69,0,0.4)' : 'rgba(168,85,247,0.4)'}; 
+          background: rgba(56, 189, 248, 0.3); 
         }
       `}</style>
     </div>
