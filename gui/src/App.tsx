@@ -6,9 +6,9 @@ import {
   Cpu, 
   Command, 
   ChevronRight, 
-  Hash, 
   Globe
 } from 'lucide-react';
+import logo from './assets/logo.png'; // CANONICAL IMPORT FOR MISSION RELIABILITY
 
 interface Message {
   id: string;
@@ -22,7 +22,7 @@ const App: React.FC = () => {
     {
       id: '1',
       role: 'agent',
-      content: "IP CODEMAKER AGENT ONLINE. Neural Link Secure. System Optimized for Light Blue Protocol.",
+      content: "IP CODEMAKER AGENT ONLINE. Neural Link Synchronized. Emerald Protocol Engaged.",
       timestamp: new Date(),
     }
   ]);
@@ -31,7 +31,7 @@ const App: React.FC = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  // --- NEURAL VORTEX ENGINE (LIGHT BLUE) ---
+  // --- NEURAL VORTEX ENGINE (EMERALD MINT) ---
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -40,7 +40,7 @@ const App: React.FC = () => {
     if (!ctx) return;
 
     let particles: { x: number; y: number; vx: number; vy: number; size: number }[] = [];
-    const particleCount = 40;
+    const particleCount = 50;
 
     const resize = () => {
       canvas.width = window.innerWidth;
@@ -53,16 +53,16 @@ const App: React.FC = () => {
         particles.push({
           x: Math.random() * canvas.width,
           y: Math.random() * canvas.height,
-          vx: (Math.random() - 0.5) * 0.4,
-          vy: (Math.random() - 0.5) * 0.4,
-          size: Math.random() * 1.5 + 0.5,
+          vx: (Math.random() - 0.5) * 0.3,
+          vy: (Math.random() - 0.5) * 0.3,
+          size: Math.random() * 2 + 0.5,
         });
       }
     };
 
     const draw = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      const accentColor = '56, 189, 248'; // Sky-400 (Light Blue)
+      const accentColor = '45, 212, 191'; 
       
       particles.forEach((p, i) => {
         p.x += p.vx;
@@ -73,17 +73,17 @@ const App: React.FC = () => {
 
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(${accentColor}, 0.6)`;
+        ctx.fillStyle = `rgba(${accentColor}, 0.5)`;
         ctx.fill();
 
         for (let j = i + 1; j < particles.length; j++) {
           const p2 = particles[j];
           const dist = Math.hypot(p.x - p2.x, p.y - p2.y);
-          if (dist < 120) {
+          if (dist < 100) {
             ctx.beginPath();
             ctx.moveTo(p.x, p.y);
             ctx.lineTo(p2.x, p2.y);
-            ctx.strokeStyle = `rgba(${accentColor}, ${0.1 * (1 - dist / 120)})`;
+            ctx.strokeStyle = `rgba(${accentColor}, ${0.12 * (1 - dist / 100)})`;
             ctx.stroke();
           }
         }
@@ -142,60 +142,57 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="relative min-h-screen bg-[#020617] text-sky-400 font-mono overflow-hidden select-none">
-      {/* --- BACKGROUND --- */}
-      <canvas ref={canvasRef} className="absolute inset-0 pointer-events-none opacity-30" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(2,6,23,0.9)_100%)] pointer-events-none" />
-      
-      {/* --- SCANLINE EFFECT --- */}
-      <div className="absolute inset-0 pointer-events-none z-50 opacity-[0.03]" style={{
-        background: 'repeating-linear-gradient(0deg, #000, #000 1px, transparent 1px, transparent 2px)',
-        backgroundSize: '100% 2px'
+    <div className="relative min-h-screen bg-[#050505] text-teal-400 font-mono overflow-hidden select-none">
+      <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{
+        backgroundImage: 'linear-gradient(rgba(45, 212, 191, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(45, 212, 191, 0.1) 1px, transparent 1px)',
+        backgroundSize: '40px 40px'
       }} />
 
-      {/* --- HUD --- */}
-      <nav className="fixed top-0 left-0 right-0 z-40 border-b border-sky-900/30 bg-[#020617]/80 backdrop-blur-xl px-6 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <img src="/vortex-logo.png" className="w-8 h-8 rounded-lg shadow-[0_0_15px_rgba(56,189,248,0.2)]" alt="" />
+      <canvas ref={canvasRef} className="absolute inset-0 pointer-events-none opacity-40" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(5,5,5,0.9)_100%)] pointer-events-none" />
+      
+      <nav className="fixed top-0 left-0 right-0 z-40 border-b border-teal-900/30 bg-[#050505]/90 backdrop-blur-3xl px-8 py-5 flex items-center justify-between">
+        <div className="flex items-center gap-5">
+          <div className="w-11 h-11 bg-teal-400/10 rounded-xl border border-teal-400/20 flex items-center justify-center p-1 shadow-[0_0_20px_rgba(45,212,191,0.2)] overflow-hidden">
+             <img src={logo} className="w-full h-full object-cover rounded-lg" alt="Vortex_Shard" />
+          </div>
           <div className="flex flex-col">
-            <span className="text-xl font-bold tracking-tight">
+            <span className="text-2xl font-black tracking-tight flex items-center gap-3">
               IP Codemaker Agent
-              <span className="ml-3 text-[10px] opacity-40 font-black tracking-[0.2em] border border-sky-500/20 px-2 py-0.5 rounded">IP_Agent_001</span>
+              <span className="text-[9px] opacity-30 font-bold border border-teal-400/30 px-2 py-0.5 rounded tracking-[0.3em] uppercase">IP_Agent_001</span>
             </span>
           </div>
         </div>
 
-        <div className="hidden md:flex items-center gap-6 text-[10px] uppercase font-bold tracking-widest opacity-40">
-          <div className="flex items-center gap-2 px-3 py-1 bg-sky-500/5 rounded-full border border-sky-500/10"><Shield size={12} /> SECURE SIGNAL</div>
-          <div className="flex items-center gap-2"><Cpu size={12} /> Llama 405B</div>
-          <div className="flex items-center gap-2"><Globe size={12} /> IP Verse</div>
+        <div className="hidden lg:flex items-center gap-8 text-[11px] font-black tracking-[0.2em] opacity-40 uppercase">
+           <div className="flex items-center gap-2"><Globe size={14} className="text-teal-500" /> IP Verse</div>
+           <div className="flex items-center gap-2 px-4 py-1.5 border border-teal-400/20 rounded-lg bg-teal-400/5"><Shield size={14} /> Link Secure</div>
         </div>
       </nav>
 
-      {/* --- MAIN INTERFACE --- */}
-      <main className="pt-28 pb-32 px-4 md:px-8 max-w-5xl mx-auto flex flex-col items-center">
-        <div className="w-full space-y-8">
+      <main className="pt-32 pb-40 px-6 md:px-12 max-w-5xl mx-auto flex flex-col items-center">
+        <div className="w-full space-y-10">
           <AnimatePresence initial={false}>
             {messages.map((msg) => (
               <motion.div
                 key={msg.id}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0, x: msg.role === 'user' ? 20 : -20 }}
+                animate={{ opacity: 1, x: 0 }}
                 className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
               >
-                <div className={`max-w-[85%] md:max-w-[75%]`}>
-                  <div className={`p-5 rounded-2xl border backdrop-blur-2xl transition-all duration-300
+                <div className={`max-w-[90%] md:max-w-[80%]`}>
+                  <div className={`p-6 rounded-2xl border transition-all duration-500 shadow-2xl
                     ${msg.role === 'user' 
-                      ? 'bg-sky-500/10 border-sky-400/20 text-sky-50' 
-                      : 'bg-slate-900/40 border-sky-900/40 text-sky-400'}
+                      ? 'bg-teal-400/5 border-teal-400/20 text-teal-50' 
+                      : 'bg-zinc-950/80 border-teal-900/40 text-teal-400 backdrop-blur-3xl'}
                   `}>
-                    <div className="flex items-center gap-2 mb-2 opacity-30 text-[10px] font-black uppercase tracking-tighter">
-                      {msg.role === 'agent' ? <ChevronRight size={14} className="text-sky-500" /> : <Terminal size={12} />}
-                      {msg.role === 'user' ? 'Local_IO' : 'Agent_Response'}
+                    <div className="flex items-center gap-2 mb-3 opacity-20 text-[10px] font-black uppercase tracking-[0.2em]">
+                      {msg.role === 'agent' ? <ChevronRight size={14} className="animate-pulse" /> : <Terminal size={14} />}
+                      {msg.role === 'user' ? 'Local_Terminal' : 'Agent_Response'}
                       <span className="ml-auto">{msg.timestamp.toLocaleTimeString()}</span>
                     </div>
                     
-                    <div className="text-sm md:text-base leading-relaxed whitespace-pre-wrap break-words font-medium">
+                    <div className="text-sm md:text-[15px] leading-relaxed whitespace-pre-wrap break-words font-medium tracking-wide">
                       {msg.content}
                     </div>
                   </div>
@@ -208,26 +205,27 @@ const App: React.FC = () => {
             <motion.div 
               initial={{ opacity: 0 }} 
               animate={{ opacity: 1 }} 
-              className="flex items-center gap-3 text-[10px] font-black px-6 opacity-50 tracking-widest italic"
+              className="flex items-center gap-4 text-[11px] font-black px-10 opacity-40 tracking-[0.4em] uppercase italic"
             >
-              <div className="flex gap-1.5">
+              <div className="flex gap-2">
                 {[0, 1, 2].map(i => (
-                  <motion.div key={i} animate={{ opacity: [0.2, 1, 0.2] }} transition={{ repeat: Infinity, delay: i * 0.2 }} className="w-1 h-1 bg-sky-400 rounded-full" />
+                  <motion.div key={i} animate={{ y: [-3, 3, -3] }} transition={{ repeat: Infinity, duration: 1.5, delay: i * 0.2 }} className="w-1.5 h-1.5 bg-teal-400 rounded-full" />
                 ))}
               </div>
-              AGENT STREAMING...
+              Streaming_Link...
             </motion.div>
           )}
           <div ref={messagesEndRef} />
         </div>
       </main>
 
-      {/* --- COMMAND CONSOLE --- */}
-      <footer className="fixed bottom-0 left-0 right-0 p-8 z-40 bg-gradient-to-t from-[#020617] via-[#020617] to-transparent">
+      <footer className="fixed bottom-0 left-0 right-0 p-10 z-40 bg-gradient-to-t from-[#050505] via-[#050505]/95 to-transparent">
         <div className="max-w-4xl mx-auto relative group">
-          <div className="relative flex bg-slate-900/60 rounded-xl border border-sky-500/10 backdrop-blur-3xl p-1.5 transition-all group-focus-within:border-sky-500/30">
-            <div className="flex items-center justify-center w-12 opacity-30">
-               <Command size={20} />
+          <div className="absolute -inset-1 rounded-2xl bg-teal-400/5 blur-xl group-focus-within:bg-teal-400/10 transition-all opacity-0 group-focus-within:opacity-100" />
+          
+          <div className="relative flex bg-zinc-950/80 rounded-xl border border-teal-400/10 backdrop-blur-3xl p-2 transition-all duration-300 group-focus-within:border-teal-400/40 group-focus-within:shadow-[0_0_30px_rgba(45,212,191,0.1)]">
+            <div className="flex items-center justify-center w-14 opacity-20">
+               <Command size={24} />
             </div>
             
             <input
@@ -235,8 +233,8 @@ const App: React.FC = () => {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyPress={(e) => e.key === 'Enter' && handleSend()}
-              placeholder="ENTER COMMAND FOR IP CODEMAKER..."
-              className="flex-1 bg-transparent px-4 py-3.5 text-sm focus:outline-none placeholder:opacity-20 text-sky-100"
+              placeholder="ENTER MISSION COMMAND..."
+              className="flex-1 bg-transparent px-5 py-4 text-sm focus:outline-none placeholder:opacity-20 text-teal-100"
             />
             
             <div className="flex items-center px-2">
@@ -244,7 +242,7 @@ const App: React.FC = () => {
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={handleSend}
-                className="bg-sky-500 text-slate-950 px-6 py-2.5 rounded-lg font-black text-xs tracking-widest hover:bg-sky-400 transition-colors shadow-[0_0_15px_rgba(56,189,248,0.2)]"
+                className="bg-teal-400 text-black px-8 py-3 rounded-lg font-black text-xs tracking-[0.2em] uppercase hover:bg-teal-300 transition-all shadow-[0_0_20px_rgba(45,212,191,0.2)]"
               >
                 ENGAGE
               </motion.button>
@@ -254,14 +252,14 @@ const App: React.FC = () => {
       </footer>
 
       <style>{`
-        ::-webkit-scrollbar { width: 3px; }
+        ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { 
-          background: rgba(56, 189, 248, 0.1); 
-          border-radius: 10px;
+          background: rgba(45, 212, 191, 0.1); 
+          border-radius: 20px;
         }
         ::-webkit-scrollbar-thumb:hover { 
-          background: rgba(56, 189, 248, 0.3); 
+          background: rgba(45, 212, 191, 0.3); 
         }
       `}</style>
     </div>
