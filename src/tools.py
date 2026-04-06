@@ -79,11 +79,16 @@ def find_tools(query: str, limit: int = 20) -> list[PortingModule]:
 
 
 def execute_tool(name: str, payload: str = '') -> ToolExecution:
+    from .real_tools import tool_handler
+    
     module = get_tool(name)
     if module is None:
         return ToolExecution(name=name, source_hint='', payload=payload, handled=False, message=f'Unknown mirrored tool: {name}')
-    action = f"Mirrored tool '{module.name}' from {module.source_hint} would handle payload {payload!r}."
-    return ToolExecution(name=module.name, source_hint=module.source_hint, payload=payload, handled=True, message=action)
+    
+    # Actually perform the action for some known tools
+    result = tool_handler(module.name, payload)
+    
+    return ToolExecution(name=module.name, source_hint=module.source_hint, payload=payload, handled=True, message=result)
 
 
 def render_tool_index(limit: int = 20, query: str | None = None) -> str:

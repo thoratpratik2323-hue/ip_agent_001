@@ -1,6 +1,6 @@
-# Claw Code Usage
+# IP Codemaker Agent Usage
 
-This guide covers the current Rust workspace under `rust/` and the `claw` CLI binary. If you are brand new, make the doctor health check your first run: start `claw`, then run `/doctor`.
+This guide covers the current Rust workspace under `rust/` and the `claw` CLI binary for the **IP Codemaker Agent**. If you are brand new, make the doctor health check your first run: start `claw`, then run `/doctor`.
 
 ## Quick-start health check
 

@@ -5,3 +5,16 @@ archive/
 # Claude Code local artifacts
 .claude/settings.local.json
 .claude/sessions/
+
+# Build and Dependencies
+node_modules/
+target/
+dist/
+build/
+*.exe
+*.pdb
+*.log
+.env
+.DS_Store
+gui/dist/
+gui/node_modules/

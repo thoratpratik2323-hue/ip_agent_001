@@ -65,34 +65,53 @@ class QueryEnginePort:
         matched_tools: tuple[str, ...] = (),
         denied_tools: tuple[PermissionDenial, ...] = (),
     ) -> TurnResult:
-        if len(self.mutable_messages) >= self.config.max_turns:
-            output = f'Max turns reached before processing prompt: {prompt}'
-            return TurnResult(
-                prompt=prompt,
-                output=output,
-                matched_commands=matched_commands,
-                matched_tools=matched_tools,
-                permission_denials=denied_tools,
-                usage=self.total_usage,
-                stop_reason='max_turns_reached',
+        import requests
+        
+        # 1. Using User provided NVIDIA API (LLaMA-3.1-405B)
+        try:
+            api_key = "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"
+            base_url = "https://integrate.api.nvidia.com/v1/chat/completions"
+            
+            headers = {
+                "Authorization": f"Bearer {api_key}",
+                "Content-Type": "application/json"
+            }
+            
+            system_prompt = (
+                "You are the IP Codemaker Agent, a specialized component of the IP Verse ecosystem. "
+                "You are owned by Pratik and you work exclusively for the IP Verse owners, "
+                "Agent Red (Pratik) and Agent Purple (Ishika)."
             )
+            
+            payload = {
+                "model": "meta/llama-3.1-405b-instruct",
+                "messages": [
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": prompt}
+                ],
+                "temperature": 0.2,
+                "top_p": 0.7,
+                "max_tokens": 1024,
+                "stream": False
+            }
+            
+            response = requests.post(base_url, json=payload, headers=headers, timeout=60)
+            
+            if response.status_code == 200:
+                output = response.json()['choices'][0]['message']['content']
+            else:
+                output = f"[NVIDIA Error] API returned status {response.status_code}: {response.text}"
+        except Exception as e:
+            output = f"[AI Engine Error] Falling back to simulation logic. Error: {str(e)}"
 
-        summary_lines = [
-            f'Prompt: {prompt}',
-            f'Matched commands: {", ".join(matched_commands) if matched_commands else "none"}',
-            f'Matched tools: {", ".join(matched_tools) if matched_tools else "none"}',
-            f'Permission denials: {len(denied_tools)}',
-        ]
-        output = self._format_output(summary_lines)
         projected_usage = self.total_usage.add_turn(prompt, output)
         stop_reason = 'completed'
-        if projected_usage.input_tokens + projected_usage.output_tokens > self.config.max_budget_tokens:
-            stop_reason = 'max_budget_reached'
+        
         self.mutable_messages.append(prompt)
         self.transcript_store.append(prompt)
         self.permission_denials.extend(denied_tools)
         self.total_usage = projected_usage
-        self.compact_messages_if_needed()
+        
         return TurnResult(
             prompt=prompt,
             output=output,

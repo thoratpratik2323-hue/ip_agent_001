@@ -59,6 +59,9 @@ def build_parser() -> argparse.ArgumentParser:
     loop_parser.add_argument('--max-turns', type=int, default=3)
     loop_parser.add_argument('--structured-output', action='store_true')
 
+    oneshot_parser = subparsers.add_parser('oneshot', help='run a single turn and return only the text')
+    oneshot_parser.add_argument('prompt')
+
     flush_parser = subparsers.add_parser('flush-transcript', help='persist and flush a temporary session transcript')
     flush_parser.add_argument('prompt')
 
@@ -156,6 +159,11 @@ def main(argv: list[str] | None = None) -> int:
             print(f'## Turn {idx}')
             print(result.output)
             print(f'stop_reason={result.stop_reason}')
+        return 0
+    if args.command == 'oneshot':
+        engine = QueryEnginePort.from_workspace()
+        result = engine.submit_message(args.prompt)
+        print(result.output)
         return 0
     if args.command == 'flush-transcript':
         engine = QueryEnginePort.from_workspace()
