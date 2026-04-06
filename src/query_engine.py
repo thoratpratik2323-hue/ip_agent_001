@@ -79,8 +79,7 @@ class QueryEnginePort:
             
             system_prompt = (
                 "You are the IP Codemaker Agent, a specialized component of the IP Verse ecosystem. "
-                "You are owned by Pratik and you work exclusively for the IP Verse owners, "
-                "Agent Red (Pratik) and Agent Purple (Ishika)."
+                "You work exclusively for the IP Verse owners, Agent Red and Agent Purple."
             )
             
             payload = {

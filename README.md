@@ -1,53 +1,69 @@
 # IP Codemaker Agent (ip_agent_001)
 
 <p align="center">
-  <a href="https://github.com/ultraworkers/claw-code">IP Verse / IP Codemaker Agent</a>
-  ·
-  <a href="./USAGE.md">Usage</a>
-  ·
-  <a href="./rust/README.md">Rust workspace</a>
-  ·
-  <a href="./PARITY.md">Parity</a>
-  ·
-  <a href="./ROADMAP.md">Roadmap</a>
+  <img src="assets/vortex-logo.png" alt="IP Codemaker Agent Neural Vortex" width="500" />
 </p>
 
 <p align="center">
-  <img src="assets/claw-hero.jpeg" alt="IP Codemaker Agent" width="300" />
+  <img src="https://img.shields.io/badge/OS-Neural_Vortex-8A2BE2?style=for-the-badge&logo=target" alt="OS" />
+  <img src="https://img.shields.io/badge/Mission-IP_Verse-FF4500?style=for-the-badge&logo=shield" alt="Mission" />
+  <img src="https://img.shields.io/badge/Agent-Red-D0312D?style=for-the-badge" alt="Agent Red" />
+  <img src="https://img.shields.io/badge/Agent-Purple-800080?style=for-the-badge" alt="Agent Purple" />
 </p>
 
-IP Codemaker Agent is a specialized AI development assistant and a part of the **IP Verse** ecosystem. It is designed to work for the owners of IP Verse, specifically **Agent Red** (Pratik) and **Agent Purple** (Ishika).
+---
 
-## Core Identity
+## 🌌 The Neural Interface
+IP Codemaker Agent is a high-fidelity, autonomous AI development assistant specialized for the **IP Verse** ecosystem. Powered by a custom **Neural Vortex** engine, it delivers a "God Mode" coding experience with real-time feedback and tactical oversight.
 
-- **Name**: IP Codemaker Agent
-- **Owner**: Pratik
-- **Ecosystem**: IP Verse
-- **Principal Users**: Agent Red (Pratik) & Agent Purple (Ishika)
+### 🧬 Core Identity
+- **Designation**: `ip_agent_001`
+- **Ecosystem**: IP Verse Neural Network
+- **Primary Control**: Agent Red & Agent Purple
+- **Mission**: Accelerate the development of the IP ecosystem through autonomous code generation, system architecture, and deep-learning integration.
 
-> [!IMPORTANT]
-> Start with [`USAGE.md`](./USAGE.md) for build, auth, CLI, session, and parity-harness workflows. Make `claw doctor` your first health check after building, use [`rust/README.md`](./rust/README.md) for crate-level details, read [`PARITY.md`](./PARITY.md) for the current Rust-port checkpoint, and see [`docs/container.md`](./docs/container.md) for the container-first workflow.
+---
 
-## Current repository shape
+## 🎮 Features & HUD
+The Agent features a **"Neural Vortex" Dashboard**—a 3D tactical interface designed for high-stakes mission execution:
 
-- **`rust/`** — canonical Rust workspace and the `claw` CLI binary
-- **`USAGE.md`** — task-oriented usage guide for the current product surface
-- **`PARITY.md`** — Rust-port parity status and migration notes
-- **`ROADMAP.md`** — active roadmap and cleanup backlog
-- **`PHILOSOPHY.md`** — project intent and system-design framing
-- **`src/` + `tests/`** — companion Python/reference workspace and audit helpers; not the primary runtime surface
+- **Neural Particle Background**: Real-time visual feedback based on the current mission state.
+- **Dual-Theme Synchronization**:
+  - **🚨 Agent Red (Inferno)**: High-intensity mode for rapid fire development.
+  - **🌌 Agent Purple (Zenith)**: Deep concentration mode for system architecture.
+- **Holographic HUD**: Real-time telemetry for model token usage, file vault health, and system resources.
 
-## Quick start
+---
+
+## 🛠️ Repository Architecture
+
+- **`rust/`** — Canonical Rust engine and the `claw` CLI binary.
+- **`gui/`** — The React-driven Neural Vortex interface.
+- **`USAGE.md`** — Tactical guide for build, auth, and session workflows.
+- **`ROADMAP.md`** — The evolution of the Neural Vortex and upcoming mission phases.
+
+---
+
+## ⚡ Quick Start (Tactical Protocol)
 
 ```bash
+# Initialize the Neural Link
 cd rust
 cargo build --workspace
+
+# Execute the Agent
 ./target/debug/claw --help
-./target/debug/claw prompt "summarize this repository"
 ```
 
-## Ownership / affiliation disclaimer
+---
 
-- This repository is owned by **Pratik**.
-- This is an official component of the **IP Verse** ecosystem.
-- This project is a specialized implementation of the `claw` CLI agent harness.
+## 🛡️ Protocol Disclaimer
+This project is an official component of the **IP Verse** ecosystem. It is a specialized implementation designed to serve as the ultimate development backbone for the mission. 
+
+**Access restricted to Authorized Agents only.**
+
+---
+
+<p align="center">
+  <i>"Beyond the code. Into the Vortex."</i>
+</p>
