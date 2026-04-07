@@ -347,7 +347,7 @@ export default function App() {
                   className="text-5xl font-black italic uppercase tracking-tighter text-white glow-text-blue"
                   style={{ textShadow: `0 0 30px ${theme.primary}33` }}
                 >
-                  Neural Interface <span style={{ color: theme.primary }}>Online</span>
+                  IP Agent 001 <span style={{ color: theme.primary }}>Online</span>
                 </motion.h2>
                 <div className="mt-8 flex justify-center gap-6 text-[10px] font-black uppercase tracking-[0.4em] opacity-20">
                   <span>AES-256 Encryption</span>
@@ -385,7 +385,7 @@ export default function App() {
                   <div className="flex items-center gap-3 px-2">
                     {m.role === "assistant" && <div className="w-2.5 h-2.5 rounded-full animate-pulse" style={{ backgroundColor: theme.primary }} />}
                     <span className="text-[9px] font-black uppercase tracking-[0.2em] opacity-40">
-                      {m.role === "user" ? "Protocol Operator" : `ip_agent_001 · VORTEX PROTOCOL`}
+                      {m.role === "user" ? "Protocol Operator" : `IP Codemaker Agent`}
                     </span>
                   </div>
                   <div className={cn(
