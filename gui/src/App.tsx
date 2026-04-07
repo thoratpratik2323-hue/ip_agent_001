@@ -26,7 +26,9 @@ import {
   Send,
   Menu,
   PanelLeftClose,
-  Search
+  Search,
+  Copy,
+  Check
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { cn } from "./lib/utils";
@@ -160,6 +162,51 @@ const Gauge = ({ name, value, accent }: { name: string; value: number; accent: s
     </div>
   </div>
 );
+
+const CodeBlock = ({ inline, className, children, ...props }: any) => {
+  const [copied, setCopied] = useState(false);
+  const codeRef = useRef<HTMLElement>(null);
+
+  const handleCopy = () => {
+    const text = String(children).replace(/\n$/, "");
+    navigator.clipboard.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  if (inline) {
+    return <code className={cn("bg-white/10 px-1.5 py-0.5 rounded text-cyan-400 font-mono text-[13px]", className)} {...props}>{children}</code>;
+  }
+
+  return (
+    <div className="relative group my-6 first:mt-0 last:mb-0">
+      <div className="absolute right-3 top-3 z-20">
+        <button
+          onClick={handleCopy}
+          className={cn(
+            "p-2 rounded-lg transition-all duration-300 backdrop-blur-md border border-white/10 flex items-center gap-2 text-[10px] font-black uppercase tracking-widest",
+            copied ? "bg-green-500/20 text-green-400 border-green-500/30" : "bg-white/5 text-white/40 hover:bg-white/10 hover:text-white"
+          )}
+        >
+          {copied ? (
+            <>
+              <Check className="w-3.5 h-3.5" />
+              <span>Copied</span>
+            </>
+          ) : (
+            <>
+              <Copy className="w-3.5 h-3.5" />
+              <span>Copy</span>
+            </>
+          )}
+        </button>
+      </div>
+      <pre className={cn("p-6 overflow-x-auto rounded-xl bg-black/40 border border-white/5 custom-scrollbar text-[13px] leading-relaxed", className)}>
+        <code className="block font-mono text-cyan-500/90" {...props}>{children}</code>
+      </pre>
+    </div>
+  );
+};
 
 export default function App() {
   const theme = THEME;
@@ -347,22 +394,22 @@ export default function App() {
                       ? "bg-white/10 rounded-tr-none border-white/20 p-4 max-w-[70%]" 
                       : "bg-black/60 rounded-tl-none border-white/5 shadow-inner p-6 max-w-[80%]"
                   )}>
-                   <div className="prose prose-invert max-w-none prose-pre:bg-black/80 prose-pre:border prose-pre:border-white/5 prose-code:text-cyan-400 text-sm leading-relaxed">
-                    <ReactMarkdown>{m.content}</ReactMarkdown>
+                   <div className="prose prose-invert max-w-none prose-pre:bg-transparent prose-pre:p-0 prose-pre:border-none prose-code:text-cyan-400 text-sm leading-relaxed">
+                    <ReactMarkdown components={{ code: CodeBlock }}>{m.content}</ReactMarkdown>
                   </div>
                   </div>
                 </motion.div>
               ))}
               {isLoading && (
-                <div className="flex flex-col items-start gap-4">
-                  <span className="text-[9px] font-black uppercase tracking-[0.2em] opacity-30 animate-pulse">Synthesizing Neural Buffer...</span>
-                  <div className="p-8 glass-panel bg-black/60 rounded-tl-none flex items-center gap-8 shadow-inner">
-                    <div className="flex gap-2.5">
-                      <div className="w-3 h-3 rounded-full animate-bounce" style={{ backgroundColor: theme.primary, animationDelay: "0ms" }} />
-                      <div className="w-3 h-3 rounded-full animate-bounce" style={{ backgroundColor: theme.primary, animationDelay: "150ms" }} />
-                      <div className="w-3 h-3 rounded-full animate-bounce" style={{ backgroundColor: theme.primary, animationDelay: "300ms" }} />
+                <div className="flex flex-col items-start gap-3">
+                  <span className="text-[8px] font-black uppercase tracking-[0.2em] opacity-30 animate-pulse">Synthesizing Neural Buffer...</span>
+                  <div className="p-4 glass-panel bg-black/60 rounded-tl-none flex items-center gap-5 shadow-inner">
+                    <div className="flex gap-1.5">
+                      <div className="w-1.5 h-1.5 rounded-full animate-bounce" style={{ backgroundColor: theme.primary, animationDelay: "0ms" }} />
+                      <div className="w-1.5 h-1.5 rounded-full animate-bounce" style={{ backgroundColor: theme.primary, animationDelay: "150ms" }} />
+                      <div className="w-1.5 h-1.5 rounded-full animate-bounce" style={{ backgroundColor: theme.primary, animationDelay: "300ms" }} />
                     </div>
-                    <span className="text-[11px] font-mono opacity-20 lowercase italic tracking-tighter">link operational · analyzing schematic...</span>
+                    <span className="text-[10px] font-mono opacity-20 lowercase italic tracking-tighter">link operational · analyzing schematic...</span>
                   </div>
                 </div>
               )}
